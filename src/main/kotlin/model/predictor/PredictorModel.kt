@@ -1,11 +1,11 @@
 package model.predictor
 
-import model.neuralnetwork.NeuralNetwork
+import builder.neuralNetwork
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.scene.paint.Color
 import model.neuralnetwork.ActivationFunction
-import model.neuralnetwork.neuralNetwork
+import model.neuralnetwork.NeuralNetwork
 import org.deeplearning4j.nn.api.OptimizationAlgorithm
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
 import org.deeplearning4j.nn.conf.layers.DenseLayer
@@ -30,32 +30,64 @@ object PredictorModel {
 
     fun predict(color: Color) = selectedPredictor.get().predict(color)
 
-    operator fun plusAssign(labeledColor: LabeledColor) {
+    operator fun plusAssign(
+        labeledColor: LabeledColor
+    ) {
         inputs += labeledColor
-        Predictor.values().forEach { it.retrainFlag = true }
+        Predictor.values().forEach {
+            it.retrainFlag = true
+        }
     }
 
-    operator fun plusAssign(categorizedInput: Pair<Color, FontShade>) {
-        inputs += categorizedInput.let { LabeledColor(it.first, it.second) }
-        Predictor.values().forEach { it.retrainFlag = true }
+    operator fun plusAssign(
+        categorizedInput: Pair<Color, FontShade>
+    ) {
+        inputs += categorizedInput.let {
+            LabeledColor(
+                color = it.first,
+                fontShade = it.second
+            )
+        }
+        Predictor.values().forEach {
+            it.retrainFlag = true
+        }
     }
 
     fun preTrainData() {
+        println("Pre Training Data With: ${selectedPredictor.value}")
         URL("https://tinyurl.com/y2qmhfsr")
-            .readText().split(Regex("\\r?\\n"))
+            .readText()
+            .split(Regex("\\r?\\n"))
             .asSequence()
             .drop(1)
-            .filter { it.isNotBlank() }
-            .map { s ->
-                s.split(",").map { it.toInt() }
+            .filter {
+                it.isNotBlank()
             }
-            .map { Color.rgb(it[0], it[1], it[2]) }
-            .map { LabeledColor(it, Predictor.FORMULAIC.predict(it)) }
-            .toList()
+            .map { s ->
+                s.split(",").map {
+                    it.toInt()
+                }
+            }
+            .map {
+                Color.rgb(
+                    it[0],
+                    it[1],
+                    it[2]
+                )
+            }
+            .map {
+                LabeledColor(
+                    color = it,
+                    fontShade = Predictor.FORMULAIC.predict(it)
+                )
+            }.toList()
             .forEach {
                 inputs += it
             }
-        Predictor.values().forEach { it.retrainFlag = true }
+        println("Input: $inputs")
+        Predictor.values().forEach {
+            it.retrainFlag = true
+        }
     }
 
     enum class Predictor {
@@ -556,11 +588,13 @@ object PredictorModel {
             lateinit var artificialNeuralNetwork: NeuralNetwork
 
             override fun predict(color: Color): FontShade {
+                println("Predicting Using NEURAL_NETWORK_HILL_CLIMBING")
                 if (retrainFlag) {
+                    println("Re-Train Flag: $retrainFlag")
                     artificialNeuralNetwork = neuralNetwork {
-                        inputLayer(3)
-                        hiddenLayer(3, ActivationFunction.TANH)
-                        outputLayer(2, ActivationFunction.SOFTMAX)
+                        inputLayer(nodeCount = 3)
+                        hiddenLayer(nodeCount = 3, activationFunction = ActivationFunction.TANH)
+                        outputLayer(nodeCount = 2, activationFunction = ActivationFunction.SOFTMAX)
                     }
                     val trainingData = inputs.map {
                         colorAttributes(it.color) to it.fontShade.outputArray
@@ -578,11 +612,13 @@ object PredictorModel {
         NEURAL_NETWORK_SIMULATED_ANNEALING {
             lateinit var artificialNeuralNetwork: NeuralNetwork
             override fun predict(color: Color): FontShade {
+                println("Predicting Using NEURAL_NETWORK_SIMULATED_ANNEALING")
                 if (retrainFlag) {
+                    println("Re-Train Flag: $retrainFlag")
                     artificialNeuralNetwork = neuralNetwork {
-                        inputLayer(3)
-                        hiddenLayer(3, ActivationFunction.TANH)
-                        outputLayer(2, ActivationFunction.SOFTMAX)
+                        inputLayer(nodeCount = 3)
+                        hiddenLayer(nodeCount = 3, activationFunction = ActivationFunction.TANH)
+                        outputLayer(nodeCount = 2, activationFunction = ActivationFunction.SOFTMAX)
                     }
                     val trainingData = inputs.map {
                         colorAttributes(it.color) to it.fontShade.outputArray
@@ -600,7 +636,9 @@ object PredictorModel {
         OJALGO_NEURAL_NETWORK {
             lateinit var artificialNeuralNetwork: ArtificialNeuralNetwork
             override fun predict(color: Color): FontShade {
+                println("Predicting Using OJALGO_NEURAL_NETWORK")
                 if (retrainFlag) {
+                    println("Re-Train Flag: $retrainFlag")
                     artificialNeuralNetwork = ArtificialNeuralNetwork
                         .builder(3, 3, 2)
                         .apply {
@@ -611,13 +649,15 @@ object PredictorModel {
 
                             error(ArtificialNeuralNetwork.Error.CROSS_ENTROPY)
 
-                            val inputValues =
-                                inputs.asSequence().map {
+                            val inputValues = inputs
+                                .asSequence()
+                                .map {
                                     Primitive64Array.FACTORY.copy(* colorAttributes(it.color))
                                 }.toList()
 
-                            val outputValues =
-                                inputs.asSequence().map {
+                            val outputValues = inputs
+                                .asSequence()
+                                .map {
                                     Primitive64Array.FACTORY.copy(*it.fontShade.outputArray)
                                 }.toList()
 
@@ -694,7 +734,6 @@ object PredictorModel {
 /**
  *  UTILITIES
  */
-
 fun randomInt(lower: Int, upper: Int) = ThreadLocalRandom.current().nextInt(lower, upper + 1)
 
 fun randomWeightValue() = ThreadLocalRandom.current().nextDouble(-1.0, 1.0)

@@ -47,71 +47,72 @@ class MainView : View() {
                 }
 
                 center = form {
-                    fieldset {
-
-                        field("Which looks better?").hbox {
-                            button("DARK") {
-                                textFill = Color.BLACK
-                                useMaxWidth = true
-
-                                backgroundProperty().bind(
-                                    backgroundColor.select {
-                                        ReadOnlyObjectWrapper(
-                                            Background(
-                                                BackgroundFill(
-                                                    it,
-                                                    CornerRadii.EMPTY,
-                                                    Insets.EMPTY
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-
-                                action {
-                                    runAsyncWithProgress {
-                                        PredictorModel += LabeledColor(
-                                            color = backgroundColor.get(),
-                                            fontShade = FontShade.DARK
-                                        )
-                                        assignRandomColor()
-                                    }
-                                }
-                            }
-
-                            button("LIGHT") {
-                                textFill = Color.WHITE
-                                useMaxWidth = true
-
-                                backgroundProperty().bind(
-                                    backgroundColor.select {
-                                        ReadOnlyObjectWrapper(
-                                            Background(
-                                                BackgroundFill(
-                                                    it,
-                                                    CornerRadii.EMPTY,
-                                                    Insets.EMPTY
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-
-                                action {
-                                    runAsyncWithProgress {
-                                        PredictorModel += LabeledColor(
-                                            color = backgroundColor.get(),
-                                            fontShade = FontShade.DARK
-                                        )
-                                        assignRandomColor()
-                                    }
-                                }
-                            }
-                        }
-                    }
+//                    fieldset {
+//
+//                        field("Which looks better?").hbox {
+//                            button("DARK") {
+//                                textFill = Color.BLACK
+//                                useMaxWidth = true
+//
+//                                backgroundProperty().bind(
+//                                    backgroundColor.select {
+//                                        ReadOnlyObjectWrapper(
+//                                            Background(
+//                                                BackgroundFill(
+//                                                    it,
+//                                                    CornerRadii.EMPTY,
+//                                                    Insets.EMPTY
+//                                                )
+//                                            )
+//                                        )
+//                                    }
+//                                )
+//
+//                                action {
+//                                    runAsyncWithProgress {
+//                                        PredictorModel += LabeledColor(
+//                                            color = backgroundColor.get(),
+//                                            fontShade = FontShade.DARK
+//                                        )
+//                                    }
+//                                    assignRandomColor()
+//                                }
+//                            }
+//
+//                            button("LIGHT") {
+//                                textFill = Color.WHITE
+//                                useMaxWidth = true
+//
+//                                backgroundProperty().bind(
+//                                    backgroundColor.select {
+//                                        ReadOnlyObjectWrapper(
+//                                            Background(
+//                                                BackgroundFill(
+//                                                    it,
+//                                                    CornerRadii.EMPTY,
+//                                                    Insets.EMPTY
+//                                                )
+//                                            )
+//                                        )
+//                                    }
+//                                )
+//
+//                                action {
+//                                    runAsyncWithProgress {
+//                                        PredictorModel += LabeledColor(
+//                                            color = backgroundColor.get(),
+//                                            fontShade = FontShade.LIGHT
+//                                        )
+//                                    }
+//                                    assignRandomColor()
+//                                }
+//                            }
+//                        }
+//                    }
                     fieldset {
                         field("Model") {
                             combobox(PredictorModel.selectedPredictor) {
+                                println("Default Value: ${PredictorModel.selectedPredictor.value}")
                                 PredictorModel.Predictor.values().forEach {
                                     items.add(it)
                                 }
@@ -124,9 +125,9 @@ class MainView : View() {
                                 useMaxWidth = true
                                 action {
                                     runAsyncWithProgress {
+                                        println("Pre Training Button Clicked with ${PredictorModel.selectedPredictor.value} Selected")
                                         PredictorModel.preTrainData()
                                         isDisable = true
-
                                     }
                                 }
                             }

@@ -1,5 +1,6 @@
 package model.neuralnetwork
 
+import builder.NeuralNetworkBuilder
 import org.apache.commons.math3.distribution.TDistribution
 import org.nield.kotlinstatistics.randomFirst
 import org.nield.kotlinstatistics.weightedCoinFlip

@@ -1,4 +1,7 @@
-package model.neuralnetwork
+package builder
+
+import model.neuralnetwork.ActivationFunction
+import model.neuralnetwork.NeuralNetwork
 
 fun neuralNetwork(op: NeuralNetworkBuilder.() -> Unit): NeuralNetwork {
     val nn = NeuralNetworkBuilder()
