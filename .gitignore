@@ -3,6 +3,4 @@
 /.idea/
 /.gradle/
 *.iml
-gradle.properties
 secring.gpg
-/gradle.properties
