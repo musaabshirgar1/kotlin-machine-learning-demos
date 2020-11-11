@@ -14,4 +14,7 @@ The current algorithms/library implementations:
 - OjAlgo Neural Network 
 - DL4J Neural Network 
 
-![](https://i.imgur.com/SPVFfQ6.png)
+#### Demo
+![](demo.gif)
+#### Screenshot
+![](demo.png)
